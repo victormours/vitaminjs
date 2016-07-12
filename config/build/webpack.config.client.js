@@ -1,16 +1,19 @@
 import { createBabelLoaderConfig, config } from './webpack.config.common.js';
-import { concat, vitaminResolve } from '../utils';
+import { concat, vitaminResolve, appResolve } from '../utils';
 import mergeWith from 'lodash.mergewith';
 import webpack from 'webpack';
 import appConfig from '../index';
+import { map } from 'ramda';
+
 module.exports = function clientConfig(options) {
     return mergeWith({}, config(options), {
-        entry: [
-            vitaminResolve('src', 'client', 'index.js'),
-        ],
+        entry: {
+            [appConfig.build.client.filename]: [vitaminResolve('src', 'client', 'index.js')],
+            ...map(appResolve, appConfig.build.client.secondaryEntries),
+        },
         output: {
             // TODO : put hash in name
-            filename: appConfig.build.client.filename,
+            filename: '[name]',
         },
         module: {
             loaders: [
