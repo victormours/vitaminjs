@@ -52,6 +52,10 @@ function bootstrapClient() {
     // Todo replace by vitamin-app-[hash] ?
     const appElement = document.getElementById(config.rootElementId);
 
+    const passStore = route => (
+        typeof route === 'function' ? route(store) : route
+    );
+
     if (module.hot) {
         const renderError = (error, rootEl) => {
             reactRender(
@@ -69,13 +73,13 @@ function bootstrapClient() {
             const newRoutes = require('__app_modules__routes__').default;
             unmountComponentAtNode(appElement);
             try {
-                render(syncedHistory, store, newRoutes, appElement);
+                render(syncedHistory, store, passStore(newRoutes), appElement);
             } catch (e) {
                 renderError(e, appElement);
             }
         });
     }
-    render(syncedHistory, store, routes, appElement);
+    render(syncedHistory, store, passStore(routes), appElement);
 }
 
 bootstrapClient();
